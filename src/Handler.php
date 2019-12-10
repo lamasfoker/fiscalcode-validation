@@ -15,8 +15,9 @@ class Handler
 
         if (!$data['fiscalcode']) {
             $message = 'fiscal code is not present';
+        } else {
+            $fiscalCode = strtoupper(trim($data['fiscalcode']));
         }
-        $fiscalCode = strtoupper(trim($data['fiscalcode'])) ?? '';
         if (!$message && (strlen($fiscalCode) != 16 || $this->validateChecksum($fiscalCode) || $this->validateChars($fiscalCode))) {
             $message = 'fiscal code is not valid';
         }
