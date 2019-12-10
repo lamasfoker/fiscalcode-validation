@@ -5,58 +5,38 @@ namespace App;
 
 class Handler
 {
-    public function handle($data)
+    /**
+     * @param string $data
+     */
+    public function handle(string $data)
     {
-        if ($data['firstname'] && $data['lastname'] && $data['fiscalcode']) {
-            http_response_code(200);
-            header('Content-Type: application/json');
-            echo json_encode(['message' => 'ok', 'data' => $data]);
-        } else {
-            http_response_code(404);
-            header('Content-Type: application/json');
-            echo json_encode(['message' => 'ko', 'data' => $data]);
+        $data = json_decode($data);
+        $message = null;
+
+        if (!$data['fiscalcode']) {
+            $message = 'fiscal code is not present';
+            $fiscalCode = strtoupper(trim($data['fiscalcode']));
+        }
+        if (!$message && (strlen($fiscalCode) != 16 || $this->validateChecksum($fiscalCode) || $this->validateChars($fiscalCode))) {
+            $message = 'fiscal code is not valid';
+        }
+        if (!$message && $data['firstname'] && !$this->validateFirstnameChars($data['firstname'])) {
+            $message = 'firstname does not match with fiscal code';
+        }
+        if (!$message && $data['lastname'] && !$this->validateLastnameChars($data['lastname']))
+        {
+            $message = 'lastname does not match with fiscal code';
         }
         //@todo: Optionally validate date of birth and gender, but be sure to take into account 'omocodie'
         //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
-    }
-
-    /**
-     * @param string $fiscalCode
-     * @param string|null $firstname
-     * @param string|null $lastname
-     * @return bool
-     */
-    private function validateFiscalCodeAgainstName(
-        string $fiscalCode,
-        string $firstname = null,
-        string $lastname = null
-    ) {
-        $fiscalCode = strtoupper(trim($fiscalCode));
-
-        if (strlen($fiscalCode) != 16) {
-            return false;
+        if ($message) {
+            http_response_code(404);
+        } else {
+            http_response_code(200);
+            $message = 'fiscal code is valid';
         }
-
-        $valid = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        for ($i = 0; $i < 16; $i++) {
-            if (strpos($valid, $fiscalCode[$i]) === false) {
-                return false;
-            }
-        }
-
-        if (!$this->validateChecksum($fiscalCode)) {
-            return false;
-        }
-
-        if (is_null($firstname) || !$this->validateFirstnameChars($fiscalCode, $firstname)) {
-            return false;
-        }
-
-        if (is_null($lastname) || !$this->validateLastnameChars($fiscalCode, $lastname)) {
-            return false;
-        }
-
-        return true;
+        header('Content-Type: application/json');
+        echo json_encode(['message' => $message, 'data' => $data]);
     }
 
     /**
@@ -80,6 +60,22 @@ class Handler
         }
 
         return (($sum % 26) == ord($fiscalCode[15])-ord('A'));
+    }
+
+    /**
+     * @param string $fiscalCode
+     * @return bool
+     */
+    private function validateChars(string $fiscalCode): bool
+    {
+        $valid = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for ($i = 0; $i < 16; $i++) {
+            if (strpos($valid, $fiscalCode[$i]) === false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
