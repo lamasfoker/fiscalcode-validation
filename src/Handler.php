@@ -5,8 +5,9 @@ namespace LamasFoker\FiscalCodeValidation;
 
 class Handler
 {
-    public function handle()
+    public function handle($data)
     {
+        return "PHP serverless on Unubo Cloud.";
         if ($_GET['firstname'] && $_GET['lastname'] && $_GET['fiscalcode']) {
             http_response_code(200);
         } else {
