@@ -6,7 +6,7 @@
   },
   "autoload": {
     "psr-4": {
-      "LamasFoker\\FiscalCodeValidation\\": "src/"
+      "App\\": "src/"
     }
   },
   "require": {
