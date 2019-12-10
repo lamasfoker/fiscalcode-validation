@@ -10,11 +10,11 @@ class Handler
         if ($_GET['firstname'] && $_GET['lastname'] && $_GET['fiscalcode']) {
             http_response_code(200);
             header('Content-Type: application/json');
-            echo json_encode(['message' => 'ok']);
+            echo json_encode(['message' => 'ok', 'data' => $data]);
         } else {
             http_response_code(404);
             header('Content-Type: application/json');
-            echo json_encode(['message' => 'ko']);
+            echo json_encode(['message' => 'ko', 'data' => $data]);
         }
         //@todo: Optionally validate date of birth and gender, but be sure to take into account 'omocodie'
         //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
