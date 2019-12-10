@@ -7,7 +7,7 @@ class Handler
 {
     public function handle($data)
     {
-        if ($_GET['firstname'] && $_GET['lastname'] && $_GET['fiscalcode']) {
+        if ($data['firstname'] && $data['lastname'] && $data['fiscalcode']) {
             http_response_code(200);
             header('Content-Type: application/json');
             echo json_encode(['message' => 'ok', 'data' => $data]);
