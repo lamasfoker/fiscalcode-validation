@@ -1,0 +1,15 @@
+{
+  "name": "fiscal-code-validation",
+  "type": "project",
+  "config": {
+    "classmap-authoritative": true
+  },
+  "autoload": {
+    "psr-4": {
+      "LamasFoker\\FiscalCodeValidation\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^7.2"
+  }
+}
