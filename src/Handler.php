@@ -10,20 +10,20 @@ class Handler
      */
     public function handle(string $data)
     {
-        $data = json_decode($data);
+        $json = json_decode($data);
         $message = null;
 
-        if (!$data['fiscalcode']) {
+        if (!$json['fiscalcode']) {
             $message = 'fiscal code is not present';
-            $fiscalCode = strtoupper(trim($data['fiscalcode']));
+            $fiscalCode = strtoupper(trim($json['fiscalcode']));
         }
         if (!$message && (strlen($fiscalCode) != 16 || $this->validateChecksum($fiscalCode) || $this->validateChars($fiscalCode))) {
             $message = 'fiscal code is not valid';
         }
-        if (!$message && $data['firstname'] && !$this->validateFirstnameChars($data['firstname'])) {
+        if (!$message && $json['firstname'] && !$this->validateFirstnameChars($json['firstname'])) {
             $message = 'firstname does not match with fiscal code';
         }
-        if (!$message && $data['lastname'] && !$this->validateLastnameChars($data['lastname']))
+        if (!$message && $json['lastname'] && !$this->validateLastnameChars($json['lastname']))
         {
             $message = 'lastname does not match with fiscal code';
         }
@@ -36,7 +36,7 @@ class Handler
             $message = 'fiscal code is valid';
         }
         header('Content-Type: application/json');
-        echo json_encode(['message' => $message, 'data' => $data]);
+        echo json_encode(['message' => $message, 'data' => $json]);
     }
 
     /**
