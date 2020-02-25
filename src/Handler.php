@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace LamasFoker\FiscalcodeValidation;
+namespace App;
 
-use LamasFoker\FiscalcodeValidation\Model\Person;
-use LamasFoker\FiscalcodeValidation\Model\Person\Loader;
+use App\Model\Person;
+use App\Model\Person\Loader;
 
 class Handler
 {

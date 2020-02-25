@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace LamasFoker\FiscalcodeValidation\Model\Person;
+namespace App\Model\Person;
 
-use LamasFoker\FiscalcodeValidation\Model\Person;
+use App\Model\Person;
 
 class Loader
 {

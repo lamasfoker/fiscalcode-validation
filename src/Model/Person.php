@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace LamasFoker\FiscalcodeValidation\Model;
+namespace App\Model;
 
 class Person
 {
