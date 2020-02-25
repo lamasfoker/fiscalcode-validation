@@ -10,7 +10,7 @@ class Handler
      */
     public function handle(string $data)
     {
-        $data = json_decode($data);
+        $data = json_decode($data, true);
         $message = null;
 
         if (!$data['fiscalcode']) {
