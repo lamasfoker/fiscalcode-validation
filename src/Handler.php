@@ -17,7 +17,7 @@ class Handler
      */
     private $person;
     /**
-     * @var string
+     * @var string|null
      */
     private $message = null;
 
@@ -167,9 +167,9 @@ class Handler
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    private function getMessage(): string
+    private function getMessage(): ?string
     {
         return $this->message;
     }
