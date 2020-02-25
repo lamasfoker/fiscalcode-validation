@@ -1,51 +1,80 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace LamasFoker\FiscalcodeValidation;
+
+use LamasFoker\FiscalcodeValidation\Model\Person;
+use LamasFoker\FiscalcodeValidation\Model\Person\Loader;
 
 class Handler
 {
+    /**
+     * @var Loader
+     */
+    private $personLoader;
+    /**
+     * @var Person
+     */
+    private $person;
+    /**
+     * @var string
+     */
+    private $message = null;
+
+    public function __construct()
+    {
+        $this->personLoader = new Loader();
+    }
+
     /**
      * @param string $data
      */
     public function handle(string $data)
     {
-        $data = json_decode($data, true);
-        $message = null;
+        $this->person = $this->personLoader->load($data);
 
-        if (!$data['fiscalcode']) {
-            $message = 'fiscal code is not present';
+        if (is_null($this->person->getFiscalCode())) {
+            $this->setMessage('fiscal code is not present');
         } else {
-            $fiscalCode = strtoupper(trim($data['fiscalcode']));
+            //TODO: sanitiza fiscalcode in other way
+            $fiscalCode = $this->person->getFiscalCode();
+            $this->person->setFiscalCode(strtoupper(trim($fiscalCode)));
         }
-        if (!$message && (strlen($fiscalCode) != 16 || $this->validateChecksum($fiscalCode) || $this->validateChars($fiscalCode))) {
-            $message = 'fiscal code is not valid';
+        if ($this->validateLength() || $this->validateChecksum() || $this->validateChars()) {
+            $this->setMessage('fiscal code is not valid');
         }
-        if (!$message && $data['firstname'] && !$this->validateFirstnameChars($data['firstname'])) {
-            $message = 'firstname does not match with fiscal code';
+        if ($this->validateFirstNameChars()) {
+            $this->setMessage('firstname does not match with fiscal code');
         }
-        if (!$message && $data['lastname'] && !$this->validateLastnameChars($data['lastname']))
-        {
+        if ($this->validateLastNameChars()) {
             $message = 'lastname does not match with fiscal code';
         }
         //@todo: Optionally validate date of birth and gender, but be sure to take into account 'omocodie'
         //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
-        if ($message) {
-            http_response_code(404);
-        } else {
-            http_response_code(200);
-            $message = 'fiscal code is valid';
-        }
-        header('Content-Type: application/json');
-        echo json_encode(['message' => $message, 'data' => $data]);
+
+        $this->send();
     }
 
     /**
-     * @param $fiscalCode string
      * @return bool
      */
-    private function validateChecksum(string $fiscalCode): bool
+    private function validateLength(): bool
     {
+        if ($this->getMessage()) {
+            return true;
+        }
+        return strlen($this->person->getFiscalCode()) != 16;
+    }
+
+    /**
+     * @return bool
+     */
+    private function validateChecksum(): bool
+    {
+        if ($this->getMessage()) {
+            return true;
+        }
+        $fiscalCode = $this->person->getFiscalCode();
         $set1 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         $set2 = "ABCDEFGHIJABCDEFGHIJKLMNOPQRSTUVWXYZ";
         $evenSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -59,60 +88,63 @@ class Handler
                 $sum += strpos($evenSet, $charNoDigits);
             }
         }
-
         return (($sum % 26) == ord($fiscalCode[15])-ord('A'));
     }
 
     /**
-     * @param string $fiscalCode
      * @return bool
      */
-    private function validateChars(string $fiscalCode): bool
+    private function validateChars(): bool
     {
+        if ($this->getMessage()) {
+            return true;
+        }
+        $fiscalCode = $this->person->getFiscalCode();
         $valid = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         for ($i = 0; $i < 16; $i++) {
             if (strpos($valid, $fiscalCode[$i]) === false) {
                 return false;
             }
         }
-
         return true;
     }
 
     /**
-     * @param $fiscalCode string
-     * @param $firstname string
      * @return bool
      */
-    private function validateFirstnameChars(string $fiscalCode, string $firstname): bool
+    private function validateFirstNameChars(): bool
     {
-        $firstname = strtoupper(trim($firstname));
-
-        //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
-        $firstnameConsonants = $this->keepConsonants($firstname);
-        if (strlen($firstnameConsonants) >= 4) {
-            //First, third and fourth consonant
-            $firstNameLetters = $firstnameConsonants[0] . substr($firstnameConsonants, 2, 2);
-        } else {
-            //First three consonants. If not enough consonants, add the vowels. If not anough, pad with X
-            $firstNameLetters = substr(($firstnameConsonants . $this->keepVowels($firstname) . 'XXX'), 0, 3);
+        if ($this->getMessage()) {
+            return true;
         }
-
+        $fiscalCode = $this->person->getFiscalCode();
+        $firstName = $this->person->getFirstName();
+        $firstName = strtoupper(trim($firstName));
+        //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
+        $firstNameConsonants = $this->keepConsonants($firstName);
+        if (strlen($firstNameConsonants) >= 4) {
+            //First, third and fourth consonant
+            $firstNameLetters = $firstNameConsonants[0] . substr($firstNameConsonants, 2, 2);
+        } else {
+            //First three consonants. If not enough consonants, add the vowels. If not enough, pad with X
+            $firstNameLetters = substr(($firstNameConsonants . $this->keepVowels($firstName) . 'XXX'), 0, 3);
+        }
         return substr($fiscalCode, 3, 3) === $firstNameLetters;
     }
 
     /**
-     * @param $fiscalCode string
-     * @param $lastname string
      * @return bool
      */
-    private function validateLastnameChars(string $fiscalCode, string $lastname): bool
+    private function validateLastNameChars(): bool
     {
-        $lastname = strtoupper(trim($lastname));
-
+        if ($this->getMessage()) {
+            return true;
+        }
+        $fiscalCode = $this->person->getFiscalCode();
+        $lastName = $this->person->getLastName();
+        $lastName = strtoupper(trim($lastName));
         //First three consonants. If not enough consonants, add the vowels. If not anough, pad with X
-        $lastNameLetters = substr(($this->keepConsonants($lastname) . $this->keepVowels($lastname) . 'XXX'), 0, 3);
-
+        $lastNameLetters = substr(($this->keepConsonants($lastName) . $this->keepVowels($lastName) . 'XXX'), 0, 3);
         return substr($fiscalCode, 0, 3) === $lastNameLetters;
     }
 
@@ -134,4 +166,31 @@ class Handler
         return preg_replace('/[^aeiou]+/i', '', $string);
     }
 
+    /**
+     * @return string
+     */
+    private function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    /**
+     * @param string $message
+     */
+    private function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
+
+    private function send()
+    {
+        if ($this->getMessage()) {
+            http_response_code(404);
+        } else {
+            http_response_code(200);
+            $this->setMessage('fiscal code is valid');
+        }
+        header('Content-Type: application/json');
+        echo json_encode(['message' => $this->getMessage()]);
+    }
 }
