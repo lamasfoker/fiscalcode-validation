@@ -75,10 +75,10 @@ class Handler
             return true;
         }
         $fiscalCode = $this->person->getFiscalCode();
-        $set1 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $set2 = "ABCDEFGHIJABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $evenSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $oddSet = "BAKPLCQDREVOSFTGUHMINJWZYX";
+        $set1 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $set2 = 'ABCDEFGHIJABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $evenSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $oddSet = 'BAKPLCQDREVOSFTGUHMINJWZYX';
         $sum = 0;
         for ($i = 0; $i < 15; ++$i) {
             $charNoDigits = $set2[strpos($set1, $fiscalCode[$i])];
@@ -100,7 +100,7 @@ class Handler
             return true;
         }
         $fiscalCode = $this->person->getFiscalCode();
-        $valid = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $valid = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         for ($i = 0; $i < 16; $i++) {
             if (strpos($valid, $fiscalCode[$i]) === false) {
                 return false;
@@ -154,7 +154,7 @@ class Handler
      */
     private function keepConsonants(string $string): string
     {
-        return preg_replace('/[^bcdfghjklmnpqrstvwxyz]+/i', '', $string);
+        return preg_replace('/[^BCDEFGHJKLMNPQRSTUVWXYZ]+/', '', $string);
     }
 
     /**
@@ -163,7 +163,7 @@ class Handler
      */
     private function keepVowels(string $string): string
     {
-        return preg_replace('/[^aeiou]+/i', '', $string);
+        return preg_replace('/[^AEIOU]+/', '', $string);
     }
 
     /**
