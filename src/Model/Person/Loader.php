@@ -22,22 +22,22 @@ class Loader
         $data = json_decode($data, true);
         $person = $this->person;
         if (array_key_exists('fiscalcode', $data)) {
-            $person->setFiscalCode($data['fiscalcode']);
+            $person->setFiscalCode(strtoupper(trim($data['fiscalcode'])));
         }
         if (array_key_exists('firstname', $data)) {
-            $person->setFirstName($data['firstname']);
+            $person->setFirstName(strtoupper(trim($data['firstname'])));
         }
         if (array_key_exists('lastname', $data)) {
-            $person->setLastName($data['lastname']);
+            $person->setLastName(strtoupper(trim($data['lastname'])));
         }
         if (array_key_exists('birthdate', $data)) {
-            $person->setBirthDate($data['birthdate']);
+            $person->setBirthDate(strtoupper(trim($data['birthdate'])));
         }
         if (array_key_exists('ismale', $data)) {
-            $person->setIsMale($data['ismale']);
+            $person->setIsMale((bool)$data['ismale']);
         }
         if (array_key_exists('municipality', $data)) {
-            $person->setMunicipality($data['municipality']);
+            $person->setMunicipality(strtoupper(trim($data['municipality'])));
         }
         return $person;
     }

@@ -35,10 +35,6 @@ class Handler
 
         if (is_null($this->person->getFiscalCode())) {
             $this->setMessage('fiscal code is not present');
-        } else {
-            //TODO: sanitiza fiscalcode in other way
-            $fiscalCode = $this->person->getFiscalCode();
-            $this->person->setFiscalCode(strtoupper(trim($fiscalCode)));
         }
         if ($this->validateLength() || $this->validateChecksum() || $this->validateChars()) {
             $this->setMessage('fiscal code is not valid');
@@ -47,7 +43,7 @@ class Handler
             $this->setMessage('firstname does not match with fiscal code');
         }
         if ($this->validateLastNameChars()) {
-            $message = 'lastname does not match with fiscal code';
+            $this->setMessage('lastname does not match with fiscal code');
         }
         //@todo: Optionally validate date of birth and gender, but be sure to take into account 'omocodie'
         //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
@@ -119,7 +115,6 @@ class Handler
         }
         $fiscalCode = $this->person->getFiscalCode();
         $firstName = $this->person->getFirstName();
-        $firstName = strtoupper(trim($firstName));
         //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
         $firstNameConsonants = $this->keepConsonants($firstName);
         if (strlen($firstNameConsonants) >= 4) {
@@ -142,8 +137,7 @@ class Handler
         }
         $fiscalCode = $this->person->getFiscalCode();
         $lastName = $this->person->getLastName();
-        $lastName = strtoupper(trim($lastName));
-        //First three consonants. If not enough consonants, add the vowels. If not anough, pad with X
+        //First three consonants. If not enough consonants, add the vowels. If not enough, pad with X
         $lastNameLetters = substr(($this->keepConsonants($lastName) . $this->keepVowels($lastName) . 'XXX'), 0, 3);
         return substr($fiscalCode, 0, 3) === $lastNameLetters;
     }
