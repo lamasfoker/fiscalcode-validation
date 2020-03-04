@@ -45,8 +45,12 @@ class Handler
         if ($this->validateLastNameChars()) {
             $this->setMessage('lastname does not match with fiscal code');
         }
+        if ($this->validateGender()) {
+            $this->setMessage('gender does not match with fiscal code');
+        }
         //@todo: Optionally validate date of birth and gender, but be sure to take into account 'omocodie'
         //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
+        //https://www1.agenziaentrate.gov.it/documentazione/versamenti/codici/ricerca/VisualizzaTabella.php?ArcName=COM-ICI
 
         $this->send();
     }
@@ -140,6 +144,22 @@ class Handler
         //First three consonants. If not enough consonants, add the vowels. If not enough, pad with X
         $lastNameLetters = substr(($this->keepConsonants($lastName) . $this->keepVowels($lastName) . 'XXX'), 0, 3);
         return substr($fiscalCode, 0, 3) === $lastNameLetters;
+    }
+
+    /**
+     * @return bool
+     */
+    private function validateGender(): bool
+    {
+        if ($this->getMessage()) {
+            return true;
+        }
+        $fiscalCode = $this->person->getFiscalCode();
+        $day = (int)substr($fiscalCode, 9, 2);
+        if (!$this->person->getIsMale()) {
+            $day -= 40;
+        }
+        return $day > 0 && $day < 32;
     }
 
     /**
