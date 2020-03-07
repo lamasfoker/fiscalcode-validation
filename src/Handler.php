@@ -45,6 +45,9 @@ class Handler
         if ($this->validateLastNameChars()) {
             $this->setMessage('lastname does not match with fiscal code');
         }
+        if ($this->validateBirthDate()) {
+            $this->setMessage('birth date does not match with fiscal code');
+        }
         if ($this->validateGender()) {
             $this->setMessage('gender does not match with fiscal code');
         }
@@ -144,6 +147,42 @@ class Handler
         //First three consonants. If not enough consonants, add the vowels. If not enough, pad with X
         $lastNameLetters = substr(($this->keepConsonants($lastName) . $this->keepVowels($lastName) . 'XXX'), 0, 3);
         return substr($fiscalCode, 0, 3) === $lastNameLetters;
+    }
+
+    /**
+     * @return bool
+     */
+    private function validateBirthDate(): bool
+    {
+        if ($this->getMessage()) {
+            return true;
+        }
+        $fiscalCode = $this->person->getFiscalCode();
+        $birthDate = $this->person->getBirthDate();
+        $year = substr($birthDate, 2, 2);
+        $month = (int)substr($birthDate, 5, 2);
+        $day = substr($birthDate, 8, 2);
+        $monthArrayMap = [
+            1 => 'A',
+            2 => 'B',
+            3 => 'C',
+            4 => 'D',
+            5 => 'E',
+            6 => 'H',
+            7 => 'L',
+            8 => 'M',
+            9 => 'P',
+            10 => 'R',
+            11 => 'S',
+            12 => 'T',
+        ];
+        if ($year !== substr($fiscalCode, 6, 2)) {
+            return false;
+        }
+        if (!array_key_exists($month, $monthArrayMap) || $monthArrayMap[$month] !== substr($fiscalCode, 8, 1)) {
+            return false;
+        }
+        return $day === substr($fiscalCode, 9, 2);
     }
 
     /**
