@@ -36,8 +36,14 @@ class Handler
         if (is_null($this->person->getFiscalCode())) {
             $this->setMessage('fiscal code is not present');
         }
-        if ($this->validateLength() || $this->validateChecksum() || $this->validateChars()) {
-            $this->setMessage('fiscal code is not valid');
+        if ($this->validateLength()) {
+            $this->setMessage('fiscal code length is not valid');
+        }
+        if ($this->validateChars()) {
+            $this->setMessage('fiscal code has chars not valid');
+        }
+        if ($this->validateChecksum()) {
+            $this->setMessage('char checksum is not valid');
         }
         if ($this->validateFirstNameChars()) {
             $this->setMessage('firstname does not match with fiscal code');
@@ -120,7 +126,7 @@ class Handler
      */
     private function validateFirstNameChars(): bool
     {
-        if ($this->getMessage()) {
+        if ($this->getMessage() || is_null($this->person->getFirstName())) {
             return true;
         }
         $fiscalCode = $this->person->getFiscalCode();
@@ -142,7 +148,7 @@ class Handler
      */
     private function validateLastNameChars(): bool
     {
-        if ($this->getMessage()) {
+        if ($this->getMessage() || is_null($this->person->getLastName())) {
             return true;
         }
         $fiscalCode = $this->person->getFiscalCode();
@@ -157,7 +163,7 @@ class Handler
      */
     private function validateBirthDate(): bool
     {
-        if ($this->getMessage()) {
+        if ($this->getMessage() || is_null($this->person->getBirthDate())) {
             return true;
         }
         $fiscalCode = $this->person->getFiscalCode();
@@ -193,7 +199,7 @@ class Handler
      */
     private function validateGender(): bool
     {
-        if ($this->getMessage()) {
+        if ($this->getMessage() || is_null($this->person->getIsMale())) {
             return true;
         }
         $fiscalCode = $this->person->getFiscalCode();
@@ -206,7 +212,7 @@ class Handler
 
     private function validateMunicipality()
     {
-        if ($this->getMessage()) {
+        if ($this->getMessage() || is_null($this->person->getMunicipality())) {
             return true;
         }
         $fiscalCode = $this->person->getFiscalCode();
@@ -231,7 +237,7 @@ class Handler
      */
     private function keepConsonants(string $string): string
     {
-        return preg_replace('/[^BCDEFGHJKLMNPQRSTUVWXYZ]+/', '', $string);
+        return preg_replace('/[^BCDFGHJKLMNPQRSTVWXYZ]+/', '', $string);
     }
 
     /**
