@@ -51,6 +51,9 @@ class Handler
         if ($this->validateGender()) {
             $this->setMessage('gender does not match with fiscal code');
         }
+        if ($this->validateMunicipality()) {
+            $this->setMessage('municipality does not match with fiscal code');
+        }
         //@todo: Optionally validate date of birth and gender, but be sure to take into account 'omocodie'
         //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
         //https://www1.agenziaentrate.gov.it/documentazione/versamenti/codici/ricerca/VisualizzaTabella.php?ArcName=COM-ICI
@@ -199,6 +202,27 @@ class Handler
             $day -= 40;
         }
         return $day > 0 && $day < 32;
+    }
+
+    private function validateMunicipality()
+    {
+        if ($this->getMessage()) {
+            return true;
+        }
+        $fiscalCode = $this->person->getFiscalCode();
+        $code = substr($fiscalCode, 11, 4);
+        $municipality = $this->person->getMunicipality();
+        if (!preg_match('/^[A-Z ]+$/', $municipality) || !preg_match('/^[A-Z][0-9]+$/', $code)) {
+            return false;
+        }
+        $url = 'https://www1.agenziaentrate.gov.it/documentazione/versamenti/codici/ricerca/VisualizzaTabella.php';
+        $query = http_build_query([
+            'iniz' => substr($municipality, 0, 1),
+            'ArcName' => 'COM-ICI'
+        ]);
+        $body = file_get_contents($url . '?' . $query);
+        preg_match('/'.$code.'<\/td><td>([A-Z ]+)/', $body, $municipalityChecked);
+        return $municipality === trim($municipalityChecked);
     }
 
     /**
