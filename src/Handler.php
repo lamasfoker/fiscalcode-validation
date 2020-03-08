@@ -60,9 +60,6 @@ class Handler
         if ($this->validateMunicipality()) {
             $this->setMessage('municipality does not match with fiscal code');
         }
-        //@todo: Optionally validate date of birth and gender, but be sure to take into account 'omocodie'
-        //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
-        //https://www1.agenziaentrate.gov.it/documentazione/versamenti/codici/ricerca/VisualizzaTabella.php?ArcName=COM-ICI
 
         $this->send();
     }
@@ -269,6 +266,9 @@ class Handler
     {
         if ($this->getMessage()) {
             http_response_code(404);
+        } elseif ($this->person->getFiscalCode() !== $this->person->getNotEscapedFiscalCode()) {
+            http_response_code(200);
+            $this->setMessage('fiscal code present omocodie and can be not valid');
         } else {
             http_response_code(200);
             $this->setMessage('fiscal code is valid');

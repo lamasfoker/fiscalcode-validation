@@ -12,6 +12,10 @@ class Person
     /**
      * @var string|null
      */
+    private $notEscapedFiscalCode = null;
+    /**
+     * @var string|null
+     */
     private $firstName = null;
     /**
      * @var string|null
@@ -44,6 +48,22 @@ class Person
     public function setFiscalCode(?string $fiscalCode): void
     {
         $this->fiscalCode = $fiscalCode;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNotEscapedFiscalCode(): ?string
+    {
+        return $this->notEscapedFiscalCode;
+    }
+
+    /**
+     * @param string|null $notEscapedFiscalCode
+     */
+    public function setNotEscapedFiscalCode(?string $notEscapedFiscalCode): void
+    {
+        $this->notEscapedFiscalCode = $notEscapedFiscalCode;
     }
 
     /**
