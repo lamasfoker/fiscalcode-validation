@@ -36,28 +36,28 @@ class Handler
         if (is_null($this->person->getFiscalCode())) {
             $this->setMessage('fiscal code is not present');
         }
-        if ($this->validateLength()) {
+        if (!$this->validateLength()) {
             $this->setMessage('fiscal code length is not valid');
         }
-        if ($this->validateChars()) {
+        if (!$this->validateChars()) {
             $this->setMessage('fiscal code has chars not valid');
         }
-        if ($this->validateChecksum()) {
+        if (!$this->validateChecksum()) {
             $this->setMessage('char checksum is not valid');
         }
-        if ($this->validateFirstNameChars()) {
+        if (!$this->validateFirstNameChars()) {
             $this->setMessage('firstname does not match with fiscal code');
         }
-        if ($this->validateLastNameChars()) {
+        if (!$this->validateLastNameChars()) {
             $this->setMessage('lastname does not match with fiscal code');
         }
-        if ($this->validateBirthDate()) {
+        if (!$this->validateBirthDate()) {
             $this->setMessage('birth date does not match with fiscal code');
         }
-        if ($this->validateGender()) {
+        if (!$this->validateGender()) {
             $this->setMessage('gender does not match with fiscal code');
         }
-        if ($this->validateMunicipality()) {
+        if (!$this->validateMunicipality()) {
             $this->setMessage('municipality does not match with fiscal code');
         }
 
@@ -72,7 +72,7 @@ class Handler
         if ($this->getMessage()) {
             return true;
         }
-        return strlen($this->person->getFiscalCode()) != 16;
+        return strlen($this->person->getFiscalCode()) === 16;
     }
 
     /**
@@ -83,21 +83,21 @@ class Handler
         if ($this->getMessage()) {
             return true;
         }
-        $fiscalCode = $this->person->getFiscalCode();
+        $fiscalCode = $this->person->getNotEscapedFiscalCode();
         $set1 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $set2 = 'ABCDEFGHIJABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $evenSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $oddSet = 'BAKPLCQDREVOSFTGUHMINJWZYX';
         $sum = 0;
-        for ($i = 0; $i < 15; ++$i) {
+        for ($i = 0; $i < 15; $i++) {
             $charNoDigits = $set2[strpos($set1, $fiscalCode[$i])];
-            if (($i % 2) == 0) {
+            if (($i % 2) === 0) {
                 $sum += strpos($oddSet, $charNoDigits);
             } else {
                 $sum += strpos($evenSet, $charNoDigits);
             }
         }
-        return (($sum % 26) == ord($fiscalCode[15])-ord('A'));
+        return (($sum % 26) === ord($fiscalCode[15])-ord('A'));
     }
 
     /**
@@ -128,7 +128,6 @@ class Handler
         }
         $fiscalCode = $this->person->getFiscalCode();
         $firstName = $this->person->getFirstName();
-        //https://quifinanza.it/tasse/codice-fiscale-come-si-calcola-e-come-si-corregge-in-caso-di-omocodia/1708/
         $firstNameConsonants = $this->keepConsonants($firstName);
         if (strlen($firstNameConsonants) >= 4) {
             //First, third and fourth consonant
@@ -224,7 +223,7 @@ class Handler
             'ArcName' => 'COM-ICI'
         ]);
         $body = file_get_contents($url . '?' . $query);
-        preg_match('/'.$code.'<\/td><td>([A-Z ]+)/', $body, $municipalityChecked);
+        preg_match('/' . $code . '<\/td><td>([A-Z ]+)/', $body, $municipalityChecked);
         return $municipality === trim($municipalityChecked);
     }
 
