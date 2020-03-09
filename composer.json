@@ -1,6 +1,4 @@
 {
-  "name": "fiscal-code-validation",
-  "type": "project",
   "config": {
     "classmap-authoritative": true
   },
