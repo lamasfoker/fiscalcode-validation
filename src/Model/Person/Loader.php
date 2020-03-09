@@ -21,6 +21,9 @@ class Loader
     {
         $data = json_decode($data, true);
         $person = $this->person;
+        if (!is_array($data)) {
+            return $person;
+        }
         if (array_key_exists('fiscalcode', $data)) {
             $fiscalCode = strtoupper(trim($data['fiscalcode']));
             $person->setFiscalCode($this->escapeFiscalCodeFromOmocodie($fiscalCode));
