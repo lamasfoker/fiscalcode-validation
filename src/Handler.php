@@ -45,6 +45,9 @@ class Handler
         if (!$this->validateChecksum()) {
             $this->setMessage('char checksum is not valid');
         }
+        if (!$this->validateOmocodie()) {
+            $this->setMessage('fiscal code is not valid for omocodie');
+        }
         if (!$this->validateFirstNameChars()) {
             $this->setMessage('firstname does not match with fiscal code');
         }
@@ -98,6 +101,16 @@ class Handler
             }
         }
         return (($sum % 26) === ord($fiscalCode[15])-ord('A'));
+    }
+
+    private function validateOmocodie(): bool
+    {
+        if ($this->getMessage()) {
+            return true;
+        }
+        $fiscalCode = $this->person->getNotEscapedFiscalCode();
+        $digit = $fiscalCode[6].$fiscalCode[7].$fiscalCode[9].$fiscalCode[10].$fiscalCode[12].$fiscalCode[13].$fiscalCode[14];
+        return preg_match('/^[0-9]*[A-Z]*$/', $digit) === 1;
     }
 
     /**

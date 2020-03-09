@@ -66,13 +66,25 @@ class Loader
             'T' => 7,
             'U' => 8,
             'V' => 9,
+            '0' => 0,
+            '1' => 1,
+            '2' => 2,
+            '3' => 3,
+            '4' => 4,
+            '5' => 5,
+            '6' => 6,
+            '7' => 7,
+            '8' => 8,
+            '9' => 9,
         ];
-        return preg_replace_callback(
-            '/[LMNP-V]/',
-            function ($char) use ($map) {
-                return $map[$char[0]];
-            },
-            $fiscalCode
-        );
+        $fiscalCode = str_split($fiscalCode);
+        $fiscalCode[6] = $map[$fiscalCode[6]];
+        $fiscalCode[7] = $map[$fiscalCode[7]];
+        $fiscalCode[9] = $map[$fiscalCode[9]];
+        $fiscalCode[10] = $map[$fiscalCode[10]];
+        $fiscalCode[12] = $map[$fiscalCode[12]];
+        $fiscalCode[13] = $map[$fiscalCode[13]];
+        $fiscalCode[14] = $map[$fiscalCode[14]];
+        return implode('', $fiscalCode);
     }
 }
