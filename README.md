@@ -31,12 +31,16 @@ This API let you validate an italian fiscal code. More information you gave to i
   * **Code:** 404 NOT FOUND <br />
     **Content:** `{ message : "fiscal code is not valid because..." }`
 
-* **Sample Call using <a href="https://httpie.org/" target="_blank">httpie</a>:**
+* **Sample Call using <a href="https://httpie.org/">httpie</a>:**
 
   ```shell script
     http post https://fiscalcode-validation.unubo.app/ fiscalcode=rssmra80a01h501u
   ```
   
+    ```shell script
+      http post https://fiscalcode-validation.unubo.app/ fiscalcode=rssmra80a01h501u ismale=true birthdate=1980/01/01
+    ```
+  
 **Clarification**
 ----
-This validation is not perfect, it is possible to have false positive and false negative, because of the presence of the <a href="https://it.wikipedia.org/wiki/Omocodia" target="_blank">omocodie</a>. The only way to know this is to ask to the Agenzia delle Entrate. In its site it is possible to have a <a href="https://telematici.agenziaentrate.gov.it/VerificaCF/Scegli.do?parameter=verificaCf" target="_blank">secure validation</a>. 
+This validation is not perfect, it is possible to have false positive and false negative, because of the presence of the <a href="https://it.wikipedia.org/wiki/Omocodia">omocodie</a>. The only way to know this is to ask to the Agenzia delle Entrate. In its site it is possible to have a <a href="https://telematici.agenziaentrate.gov.it/VerificaCF/Scegli.do?parameter=verificaCf">secure validation</a>. 
