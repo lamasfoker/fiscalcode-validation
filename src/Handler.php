@@ -227,17 +227,31 @@ class Handler
         $fiscalCode = $this->person->getFiscalCode();
         $code = substr($fiscalCode, 11, 4);
         $municipality = $this->person->getMunicipality();
-        if (!preg_match('/^[A-Z ]+$/', $municipality) || !preg_match('/^[A-Z][0-9]+$/', $code)) {
+        if (!preg_match('/^[A-Z \']+$/', $municipality) || !preg_match('/^[A-Z][0-9]{3}$/', $code)) {
             return false;
         }
-        $url = 'https://www1.agenziaentrate.gov.it/documentazione/versamenti/codici/ricerca/VisualizzaTabella.php';
-        $query = http_build_query([
-            'iniz' => substr($municipality, 0, 1),
-            'ArcName' => 'COM-ICI'
-        ]);
-        $body = file_get_contents($url . '?' . $query);
-        preg_match('/' . $code . '<\/td><td>([A-Z ]+)/', $body, $municipalityChecked);
-        return $municipality === trim($municipalityChecked);
+        if (preg_match('/^Z([0-9]{3})$/', $code, $countryCode)) {
+            //stranger or born in a foreign country
+            //it is possible to use a CSV from the official site, but I am lazy and I should have to update it
+            //see: https://sister.agenziaentrate.gov.it/CitizenArCom/InitForm.do?ric=report
+            $url = 'https://www.ilcodicefiscale.it/codici-catastali-comunali.php';
+            $query = http_build_query(['comune' => $municipality]);
+            $body = file_get_contents($url . '?' . $query);
+            if (preg_match('/<h3>(Z[0-9]{3})<\/h3>/i', $body, $codeChecked)) {
+                return $code === trim($codeChecked[1]);
+            }
+        } else {
+            $url = 'https://www1.agenziaentrate.gov.it/documentazione/versamenti/codici/ricerca/VisualizzaTabella.php';
+            $query = http_build_query([
+                'iniz' => substr($municipality, 0, 1),
+                'ArcName' => 'COM-ICI'
+            ]);
+            $body = file_get_contents($url . '?' . $query);
+            if (preg_match('/([A-Z][0-9]{3})<\/td><td >' . $municipality . '/i', $body, $codeChecked)) {
+                return $code === trim($codeChecked[1]);
+            }
+        }
+        return false;
     }
 
     /**
