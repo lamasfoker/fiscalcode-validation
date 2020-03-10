@@ -55,7 +55,7 @@ class Handler
             $this->setMessage('lastname does not match with fiscal code');
         }
         if (!$this->validateBirthDate()) {
-            $this->setMessage('birth date does not match with fiscal code');
+            $this->setMessage('birth date is not correct or it does not match with fiscal code');
         }
         if (!$this->validateGender()) {
             $this->setMessage('gender does not match with fiscal code');
@@ -177,6 +177,8 @@ class Handler
         }
         $fiscalCode = $this->person->getFiscalCode();
         $birthDate = $this->person->getBirthDate();
+        date_default_timezone_set('Europe/Rome');
+        $today = date("Y/m/d");
         $year = substr($birthDate, 2, 2);
         $month = (int)substr($birthDate, 5, 2);
         $day = substr($birthDate, 8, 2);
@@ -198,6 +200,9 @@ class Handler
             return false;
         }
         if (!array_key_exists($month, $monthArrayMap) || $monthArrayMap[$month] !== substr($fiscalCode, 8, 1)) {
+            return false;
+        }
+        if ($birthDate > $today) {
             return false;
         }
         return $day === substr($fiscalCode, 9, 2);
