@@ -43,4 +43,4 @@ This API let you validate an italian fiscal code. More information you gave to i
   
 **Clarification**
 ----
-This validation is not perfect, it is possible to have false positive and false negative, because of the presence of the <a href="https://it.wikipedia.org/wiki/Omocodia">omocodie</a>. The only way to know this is to ask to the Agenzia delle Entrate. In its site it is possible to have a <a href="https://telematici.agenziaentrate.gov.it/VerificaCF/Scegli.do?parameter=verificaCf">secure validation</a>. 
+This validation is not perfect, it is possible to have **false positive**, because of the presence of the <a href="https://it.wikipedia.org/wiki/Omocodia">omocodie</a>. The only way to know this is to ask to the Agenzia delle Entrate. In its site it is possible to have a <a href="https://telematici.agenziaentrate.gov.it/VerificaCF/Scegli.do?parameter=verificaCf">secure validation</a>. 
