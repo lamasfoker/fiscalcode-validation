@@ -4,42 +4,42 @@ This API let you validate an italian fiscal code. More information you gave to i
 **Usage**
 ----
 
-* **URL**
+**URL**
 
-   `https://fiscalcode-validation.unubo.app/`
+  * `https://fiscalcode-validation.unubo.app/`
 
-* **Method:**
+**Method**
 
-  `POST`
+  * `POST`
 
-* **Data Params**
+**Data Params:**
 
-   `fiscalcode`<br/>
-   `fistname`<br/>
-   `lastname`<br/>
-   `birthdate` -> in the format `yyyy/mm/dd`<br/>
-   `ismale` -> in the format `true|false`<br/>
-   `municipality` -> the Italian name of the municipality or the foreign country ex:`milano` or `albania`<br/>
+* `fiscalcode` -> required obviously
+* `fistname`
+* `lastname`
+* `birthdate` -> in the format `yyyy/mm/dd`
+* `ismale` -> in the format `true|false`
+* `municipality` -> the Italian name of the municipality or the foreign country ex:`milano` or `albania`
 
-* **Success Response:**
+**Success Response**
 
   * **Code:** 200 <br />
     **Content:** `{ message : "fiscal code is valid" }`
  
-* **Error Response:**
+**Error Response**
 
   * **Code:** 404 NOT FOUND <br />
     **Content:** `{ message : "fiscal code is not valid because..." }`
 
-* **Sample Call using <a href="https://httpie.org/">httpie</a>:**
+**Sample Call using <a href="https://httpie.org/">httpie</a>**
 
-  ```shell script
-    http post https://fiscalcode-validation.unubo.app/ fiscalcode=rssmra80a01h501u
-  ```
-  
-    ```shell script
-      http post https://fiscalcode-validation.unubo.app/ fiscalcode=rssmra80a01h501u ismale=true birthdate=1980/01/01
-    ```
+ ```shell script
+  http post https://fiscalcode-validation.unubo.app/ fiscalcode=rssmra80a01h501u
+ ```
+
+ ```shell script
+  http post https://fiscalcode-validation.unubo.app/ fiscalcode=rssmra80a01h501u ismale=true birthdate=1980/01/01
+ ```
   
 **Clarification**
 ----
