@@ -39,7 +39,7 @@ class Loader
             $person->setBirthDate(strtoupper(trim($data['birthdate'])));
         }
         if (array_key_exists('ismale', $data)) {
-            $person->setIsMale($data['ismale'] === 'true');
+            $person->setIsMale($data['ismale'] === 'true' || $data['ismale'] === true);
         }
         if (array_key_exists('municipality', $data)) {
             $person->setMunicipality(strtoupper(trim($data['municipality'])));
